@@ -1,0 +1,438 @@
+---
+title: "Restructure"
+author: "PM"
+date: "2023-01-03"
+output:
+  word_document: default
+  html_document: default
+---
+
+
+```{r}
+library(tidyverse)
+library(readxl)
+library(stargazer)
+library(magrittr)
+library(haven)
+library(plm)
+library(ggplot2)
+library(dplyr)
+library(VGAM)
+library(censReg)
+library(writexl)
+library(Rserve)
+library(pastecs)
+library(panelr)
+```
+
+
+
+```{r}
+D1="C:/Users/91910/Desktop/Me Mario/Papers/Subcontracting & Innovation"
+setwd(D1)
+
+df <- read_excel("C:/Users/91910/Desktop/Me Mario/Papers/Subcontracting & Innovation/Data 2/Data_11012023.xlsx", 
+    sheet = "Sheet3")
+
+```
+
+```{r}
+#Changing the variable names 
+
+names(df)[names(df) == "Year2"] <- "Year"
+names(df)[names(df) == "Year13"] <- "Year"
+names(df)[names(df) == "Year24"] <- "Year"
+names(df)[names(df) == "Year35"] <- "Year"
+names(df)[names(df) == "Year46"] <- "Year"
+names(df)[names(df) == "Year57"] <- "Year"
+names(df)[names(df) == "Year68"] <- "Year"
+names(df)[names(df) == "Year79"] <- "Year"
+names(df)[names(df) == "Year90"] <- "Year"
+names(df)[names(df) == "Year101"] <- "Year"
+names(df)[names(df) == "Year112"] <- "Year"
+
+
+names(df)[names(df) == "Job-work income"] <- "SUB"
+names(df)[names(df) == "Job-work income3"] <- "SUB"
+names(df)[names(df) == "Job-work income14"] <- "SUB"
+names(df)[names(df) == "Job-work income25"] <- "SUB"
+names(df)[names(df) == "Job-work income36"] <- "SUB"
+names(df)[names(df) == "Job-work income47"] <- "SUB"
+names(df)[names(df) == "Job-work income58"] <- "SUB"
+names(df)[names(df) == "Job-work income69"] <- "SUB"
+names(df)[names(df) == "Job-work income80"] <- "SUB"
+names(df)[names(df) == "Job-work income91"] <- "SUB"
+names(df)[names(df) == "Job-work income102"] <- "SUB"
+names(df)[names(df) == "Job-work income113"] <- "SUB"
+
+names(df)[names(df) == "Profit after tax"] <- "PAT"
+names(df)[names(df) == "Profit after tax4"] <- "PAT"
+names(df)[names(df) == "Profit after tax15"] <- "PAT"
+names(df)[names(df) == "Profit after tax26"] <- "PAT"
+names(df)[names(df) == "Profit after tax37"] <- "PAT"
+names(df)[names(df) == "Profit after tax48"] <- "PAT"
+names(df)[names(df) == "Profit after tax59"] <- "PAT"
+names(df)[names(df) == "Profit after tax70"] <- "PAT"
+names(df)[names(df) == "Profit after tax81"] <- "PAT"
+names(df)[names(df) == "Profit after tax92"] <- "PAT"
+names(df)[names(df) == "Profit after tax103"] <- "PAT"
+names(df)[names(df) == "Profit after tax114"] <- "PAT"
+
+names(df)[names(df) == "Research & development expenses - current account"] <- "R&D"
+names(df)[names(df) == "Research & development expenses - current account5"] <- "R&D"
+names(df)[names(df) == "Research & development expenses - current account16"] <- "R&D"
+names(df)[names(df) == "Research & development expenses - current account27"] <- "R&D"
+names(df)[names(df) == "Research & development expenses - current account38"] <- "R&D"
+names(df)[names(df) == "Research & development expenses - current account49"] <- "R&D"
+names(df)[names(df) == "Research & development expenses - current account60"] <- "R&D"
+names(df)[names(df) == "Research & development expenses - current account71"] <- "R&D"
+names(df)[names(df) == "Research & development expenses - current account82"] <- "R&D"
+names(df)[names(df) == "Research & development expenses - current account93"] <- "R&D"
+names(df)[names(df) == "Research & development expenses - current account104"] <- "R&D"
+names(df)[names(df) == "Research & development expenses - current account115"] <- "R&D"
+
+names(df)[names(df) == "Net sales6"] <- "Net sales"
+names(df)[names(df) == "Net sales17"] <- "Net sales"
+names(df)[names(df) == "Net sales28"] <- "Net sales"
+names(df)[names(df) == "Net sales39"] <- "Net sales"
+names(df)[names(df) == "Net sales50"] <- "Net sales"
+names(df)[names(df) == "Net sales61"] <- "Net sales"
+names(df)[names(df) == "Net sales72"] <- "Net sales"
+names(df)[names(df) == "Net sales83"] <- "Net sales"
+names(df)[names(df) == "Net sales94"] <- "Net sales"
+names(df)[names(df) == "Net sales105"] <- "Net sales"
+names(df)[names(df) == "Net sales116"] <- "Net sales"
+
+names(df)[names(df) == "Net plant and machinery"] <- "NPM"
+names(df)[names(df) == "Net plant and machinery7"] <- "NPM"
+names(df)[names(df) == "Net plant and machinery18"] <- "NPM"
+names(df)[names(df) == "Net plant and machinery29"] <- "NPM"
+names(df)[names(df) == "Net plant and machinery40"] <- "NPM"
+names(df)[names(df) == "Net plant and machinery51"] <- "NPM"
+names(df)[names(df) == "Net plant and machinery62"] <- "NPM"
+names(df)[names(df) == "Net plant and machinery73"] <- "NPM"
+names(df)[names(df) == "Net plant and machinery84"] <- "NPM"
+names(df)[names(df) == "Net plant and machinery95"] <- "NPM"
+names(df)[names(df) == "Net plant and machinery106"] <- "NPM"
+names(df)[names(df) == "Net plant and machinery117"] <- "NPM"
+
+names(df)[names(df) == "Salaries, wages, bonus, ex gratia pf & gratuities paid"] <- "Sal&Wag"
+names(df)[names(df) == "Salaries, wages, bonus, ex gratia pf & gratuities paid8"] <- "Sal&Wag"
+names(df)[names(df) == "Salaries, wages, bonus, ex gratia pf & gratuities paid19"] <- "Sal&Wag"
+names(df)[names(df) == "Salaries, wages, bonus, ex gratia pf & gratuities paid30"] <- "Sal&Wag"
+names(df)[names(df) == "Salaries, wages, bonus, ex gratia pf & gratuities paid41"] <- "Sal&Wag"
+names(df)[names(df) == "Salaries, wages, bonus, ex gratia pf & gratuities paid52"] <- "Sal&Wag"
+names(df)[names(df) == "Salaries, wages, bonus, ex gratia pf & gratuities paid63"] <- "Sal&Wag"
+names(df)[names(df) == "Salaries, wages, bonus, ex gratia pf & gratuities paid74"] <- "Sal&Wag"
+names(df)[names(df) == "Salaries, wages, bonus, ex gratia pf & gratuities paid85"] <- "Sal&Wag"
+names(df)[names(df) == "Salaries, wages, bonus, ex gratia pf & gratuities paid96"] <- "Sal&Wag"
+names(df)[names(df) == "Salaries, wages, bonus, ex gratia pf & gratuities paid107"] <- "Sal&Wag"
+names(df)[names(df) == "Salaries, wages, bonus, ex gratia pf & gratuities paid118"] <- "Sal&Wag"
+
+names(df)[names(df) == "Technical know-how fees and technical service fees"] <- "TK"
+names(df)[names(df) == "Technical know-how fees and technical service fees9"] <- "TK"
+names(df)[names(df) == "Technical know-how fees and technical service fees20"] <- "TK"
+names(df)[names(df) == "Technical know-how fees and technical service fees31"] <- "TK"
+names(df)[names(df) == "Technical know-how fees and technical service fees42"] <- "TK"
+names(df)[names(df) == "Technical know-how fees and technical service fees53"] <- "TK"
+names(df)[names(df) == "Technical know-how fees and technical service fees64"] <- "TK"
+names(df)[names(df) == "Technical know-how fees and technical service fees75"] <- "TK"
+names(df)[names(df) == "Technical know-how fees and technical service fees86"] <- "TK"
+names(df)[names(df) == "Technical know-how fees and technical service fees97"] <- "TK"
+names(df)[names(df) == "Technical know-how fees and technical service fees108"] <- "TK"
+names(df)[names(df) == "Technical know-how fees and technical service fees119"] <- "TK"
+
+
+names(df)[names(df) == "SI10"] <- "SI"
+names(df)[names(df) == "SI21"] <- "SI"
+names(df)[names(df) == "SI32"] <- "SI"
+names(df)[names(df) == "SI43"] <- "SI"
+names(df)[names(df) == "SI54"] <- "SI"
+names(df)[names(df) == "SI65"] <- "SI"
+names(df)[names(df) == "SI76"] <- "SI"
+names(df)[names(df) == "SI87"] <- "SI"
+names(df)[names(df) == "SI98"] <- "SI"
+names(df)[names(df) == "SI109"] <- "SI"
+names(df)[names(df) == "SI120"] <- "SI"
+
+names(df)[names(df) == "RI12"] <- "RI"
+names(df)[names(df) == "RI23"] <- "RI"
+names(df)[names(df) == "RI34"] <- "RI"
+names(df)[names(df) == "RI45"] <- "RI"
+names(df)[names(df) == "RI56"] <- "RI"
+names(df)[names(df) == "RI67"] <- "RI"
+names(df)[names(df) == "RI78"] <- "RI"
+names(df)[names(df) == "RI89"] <- "RI"
+names(df)[names(df) == "RI100"] <- "RI"
+names(df)[names(df) == "RI111"] <- "RI"
+names(df)[names(df) == "RI122"] <- "RI"
+
+
+names(df)[names(df)=="PI11"]<-"PI"
+names(df)[names(df)=="PI22"]<-"PI"
+names(df)[names(df)=="PI33"]<-"PI"
+names(df)[names(df)=="PI44"]<-"PI"
+names(df)[names(df)=="PI55"]<-"PI"
+names(df)[names(df)=="PI66"]<-"PI"
+names(df)[names(df)=="PI77"]<-"PI"
+names(df)[names(df)=="PI88"]<-"PI"
+names(df)[names(df)=="PI99"]<-"PI"
+names(df)[names(df)=="PI110"]<-"PI"
+names(df)[names(df)=="PI121"]<-"PI"
+
+
+
+
+
+
+
+
+
+
+names(df)[names(df) == "Company Name"] <- "CC"
+names(df)[names(df) == "NIC code"] <- "NIC"
+
+
+
+```
+
+```{r}
+#Have made a new panel data using just the companies as the index 
+#Then I removed the columns in excel, keeping only the CC, NIC, Years, SI, RI and PI Values
+#The lines of code given below are for making the data and making the data available as csv format. 
+
+E3<-pdata.frame(df, index=("CC"), drop.index=TRUE, row.names=TRUE)
+ write.csv(E3, file = "DATA.csv")
+
+ 
+ 
+#This is the data that converts the data into longitudnal data structure that we are looking for. 
+E3.2<-read.csv("DATA.csv")
+str(E3.2)
+
+pnl<- long_panel(E3.2, prefix = ".", begin = 1, end = 11, id = "X", as_panel_data = T)
+pnl$NIC_2<-substr(pnl$NIC, 1, 2)
+
+
+
+```
+
+```{r}
+#NIC Sets
+
+
+pnl_10<-subset(pnl, substr(pnl$NIC, 1, 2) == 10)
+pnl_11<-subset(pnl, substr(pnl$NIC, 1, 2) == 11)
+pnl_12<-subset(pnl, substr(pnl$NIC, 1, 2) == 12)
+pnl_13<-subset(pnl, substr(pnl$NIC, 1, 2) == 13)
+pnl_14<-subset(pnl, substr(pnl$NIC, 1, 2) == 14)
+pnl_15<-subset(pnl, substr(pnl$NIC, 1, 2) == 15)
+pnl_16<-subset(pnl, substr(pnl$NIC, 1, 2) == 16)
+pnl_17<-subset(pnl, substr(pnl$NIC, 1, 2) == 17)
+pnl_18<-subset(pnl, substr(pnl$NIC, 1, 2) == 18)
+pnl_19<-subset(pnl, substr(pnl$NIC, 1, 2) == 19)
+pnl_20<-subset(pnl, substr(pnl$NIC, 1, 2) == 20)
+pnl_21<-subset(pnl, substr(pnl$NIC, 1, 2) == 21)
+pnl_22<-subset(pnl, substr(pnl$NIC, 1, 2) == 22)
+pnl_23<-subset(pnl, substr(pnl$NIC, 1, 2) == 23)
+pnl_24<-subset(pnl, substr(pnl$NIC, 1, 2) == 24)
+pnl_25<-subset(pnl, substr(pnl$NIC, 1, 2) == 25)
+pnl_26<-subset(pnl, substr(pnl$NIC, 1, 2) == 26)
+pnl_27<-subset(pnl, substr(pnl$NIC, 1, 2) == 27)
+pnl_28<-subset(pnl, substr(pnl$NIC, 1, 2) == 28)
+pnl_29<-subset(pnl, substr(pnl$NIC, 1, 2) == 29)
+pnl_30<-subset(pnl, substr(pnl$NIC, 1, 2) == 30)
+pnl_31<-subset(pnl, substr(pnl$NIC, 1, 2) == 31)
+pnl_32<-subset(pnl, substr(pnl$NIC, 1, 2) == 32)
+pnl_33<-subset(pnl, substr(pnl$NIC, 1, 2) == 33)
+
+
+
+```
+
+```{r}
+#Running the Regression Models with the new data structure. 
+
+###FE MODELs
+
+grun.fe <- plm(RI ~ SI + PI + Net.sales, data = pnl, model = "within")
+summary(grun.fe)
+nobs(grun.fe)
+
+###RANDOM MODEL
+grun.re2 <- plm(RI ~ SI + PI + Net.sales , data = pnl, model = "random")
+summary(grun.re2)
+nobs(grun.re2)
+
+
+###Hausman test
+## If p-value is < 0.05 then use fixed effects
+phtest(grun.fe, grun.re2)
+
+panelResult <- censReg( RI ~ SI + PI + Net.sales , data = pnl)
+
+summary (panelResult)
+
+
+```
+
+
+
+
+
+```{r}
+#BHHH Reg Test
+Reg_10<-censReg(RI ~ SI + PI + Net.sales, data = pnl_10, method = "BHHH")
+summary(Reg_10)
+
+Reg_11<-censReg(RI ~ SI + PI + Net.sales, data = pnl_11, method = "BHHH")
+summary(Reg_11)
+
+Reg_12<-censReg(RI ~ SI + PI + Net.sales, data = pnl_12, method = "BHHH")
+summary(Reg_12)
+
+Reg_13<-censReg(RI ~ SI + PI + Net.sales, data = pnl_13, method = "BHHH")
+summary(Reg_13)
+
+Reg_14<-censReg(RI ~ SI + PI + Net.sales, data = pnl_14, method = "BHHH")
+summary(Reg_14)
+
+Reg_15<-censReg(RI ~ SI + PI + Net.sales, data = pnl_15, method = "BHHH")
+summary(Reg_15)
+
+
+Reg_16<-censReg(RI ~ SI + PI + Net.sales, data = pnl_16, method = "BHHH")
+summary(Reg_16)
+
+Reg_17<-censReg(RI ~ SI + PI + Net.sales, data = pnl_17, method = "BHHH")
+summary(Reg_17)
+
+Reg_18<-censReg(RI ~ SI + PI + Net.sales, data = pnl_18, method = "BHHH")
+summary(Reg_18)
+
+Reg_19<-censReg(RI ~ SI + PI + Net.sales, data = pnl_19, method = "BHHH")
+summary(Reg_19)
+
+Reg_20<-censReg(RI ~ SI + PI + Net.sales, data = pnl_20, method = "BHHH")
+summary(Reg_20)
+
+Reg_21<-censReg(RI ~ SI + PI + Net.sales, data = pnl_21, method = "BHHH")
+summary(Reg_21)
+
+Reg_22<-censReg(RI ~ SI + PI + Net.sales, data = pnl_22, method = "BHHH")
+summary(Reg_22)
+
+Reg_23<-censReg(RI ~ SI + PI + Net.sales, data = pnl_23, method = "BHHH")
+summary(Reg_23)
+
+
+Reg_24<-censReg(RI ~ SI + PI + Net.sales, data = pnl_24, method = "BHHH")
+summary(Reg_24)
+
+Reg_25<-censReg(RI ~ SI + PI + Net.sales, data = pnl_25, method = "BHHH")
+summary(Reg_25)
+
+Reg_26<-censReg(RI ~ SI + PI + Net.sales, data = pnl_26, method = "BHHH")
+summary(Reg_26)
+
+Reg_27<-censReg(RI ~ SI + PI + Net.sales, data = pnl_27, method = "BHHH")
+summary(Reg_27)
+
+Reg_28<-censReg(RI ~ SI + PI + Net.sales, data = pnl_28, method = "BHHH")
+summary(Reg_28)
+
+Reg_29<-censReg(RI ~ SI + PI + Net.sales, data = pnl_29, method = "BHHH")
+summary(Reg_29)
+
+Reg_30<-censReg(RI ~ SI + PI + Net.sales, data = pnl_30, method = "BHHH")
+summary(Reg_30)
+
+Reg_31<-censReg(RI ~ SI + PI + Net.sales, data = pnl_31, method = "BHHH")
+summary(Reg_31)
+
+Reg_32<-censReg(RI ~ SI + PI + Net.sales, data = pnl_32, method = "BHHH")
+summary(Reg_32)
+
+
+```
+
+```{r}
+###Without BHHH
+Reg_10b<-censReg(RI ~ SI + PI + Net.sales, data = pnl_10)
+summary(Reg_10b)
+
+Reg_11b<-censReg(RI ~ SI + PI + Net.sales, data = pnl_11)
+summary(Reg_11b)
+
+Reg_12b<-censReg(RI ~ SI + PI + Net.sales, data = pnl_12)
+summary(Reg_12b)
+
+Reg_13b<-censReg(RI ~ SI + PI + Net.sales, data = pnl_13)
+summary(Reg_13b)
+
+Reg_14b<-censReg(RI ~ SI + PI + Net.sales, data = pnl_14)
+summary(Reg_14b)
+
+Reg_15b<-censReg(RI ~ SI + PI + Net.sales, data = pnl_15)
+summary(Reg_15b)
+
+
+Reg_16b<-censReg(RI ~ SI + PI + Net.sales, data = pnl_16)
+summary(Reg_16b)
+
+Reg_17b<-censReg(RI ~ SI + PI + Net.sales, data = pnl_17)
+summary(Reg_17b)
+
+Reg_18b<-censReg(RI ~ SI + PI + Net.sales, data = pnl_18)
+summary(Reg_18b)
+
+Reg_19b<-censReg(RI ~ SI + PI + Net.sales, data = pnl_19)
+summary(Reg_19b)
+
+Reg_20b<-censReg(RI ~ SI + PI + Net.sales, data = pnl_20)
+summary(Reg_20b)
+
+Reg_21b<-censReg(RI ~ SI + PI + Net.sales, data = pnl_21)
+summary(Reg_21b)
+
+Reg_22b<-censReg(RI ~ SI + PI + Net.sales, data = pnl_22)
+summary(Reg_22b)
+
+Reg_23b<-censReg(RI ~ SI + PI + Net.sales, data = pnl_23)
+summary(Reg_23b)
+
+
+Reg_24b<-censReg(RI ~ SI + PI + Net.sales, data = pnl_24)
+summary(Reg_24b)
+
+Reg_25b<-censReg(RI ~ SI + PI + Net.sales, data = pnl_25)
+summary(Reg_25b)
+
+Reg_26b<-censReg(RI ~ SI + PI + Net.sales, data = pnl_26)
+summary(Reg_26b)
+
+Reg_27b<-censReg(RI ~ SI + PI + Net.sales, data = pnl_27)
+summary(Reg_27b)
+```
+
+```{r}
+Reg_28b<-censReg(RI ~ SI + PI + Net.sales +tk, data = pnl_28)
+summary(Reg_28b)
+
+Reg_29b<-censReg(RI ~ SI + PI + Net.sales, data = pnl_29)
+summary(Reg_29b)
+```
+Reg_30b<-censReg(RI ~ SI + PI + Net.sales, data = pnl_30)
+summary(Reg_30b)
+
+Reg_31b<-censReg(RI ~ SI + PI + Net.sales, data = pnl_31)
+summary(Reg_31b)
+
+Reg_32b<-censReg(RI ~ SI + PI + Net.sales, data = pnl_32)
+summary(Reg_32b)
+
+
+```
+
+
+
