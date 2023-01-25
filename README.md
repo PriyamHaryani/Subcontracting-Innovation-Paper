@@ -1,3 +1,3 @@
 # Subcontracting-Innovation-Paper
-R code & Data files for Subcontrating & Innovation Paper.
+Panel Regression & Yearly Regression for the paper.
 This paper is work-in-progress (25-01-23)
