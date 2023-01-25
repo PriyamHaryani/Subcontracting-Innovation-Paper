@@ -1,0 +1,543 @@
+---
+title: "Year vise reg"
+author: "PM"
+date: '2022-07-09'
+output: word_document
+---
+
+
+
+```{r}
+
+library(tidyverse)
+library(readxl)
+library(stargazer)
+library(magrittr)
+library(haven)
+library(plm)
+library(ggplot2)
+library(dplyr)
+library(VGAM)
+library(censReg)
+library(writexl)
+library(Rserve)
+library(pastecs)
+
+```
+
+
+
+```{r}
+###Data read
+y2011 <- read_excel("C:/Users/91910/Desktop/dissertaion/Data 2 coz prowess sucks/H.xlsx", 
+    sheet = "2011")
+
+###Dummy setup
+x <- na.omit(y2011$`Net sales`)
+
+quantile(x , c(0.20,0.4,0.6,0.8,1))
+y <- (y2011$`Net sales`)
+
+
+y2011$d20 <- ifelse (y <= 6.8,"1","0")
+y2011$d40 <- ifelse (y > 6.9   & y <= 30, "1","0")
+y2011$d60 <- ifelse (y > 31 & y <= 85 , "1","0")
+y2011$d80 <- ifelse (y > 86 & y <=  271, "1","0")
+y2011$d100 <- ifelse (y > 272 & y <= 330986, "1","0")
+summary(y2011)
+
+
+
+###OLS regression
+r_y2011 <- lm(y2011$RI ~ y2011$SI + y2011$PAT  + y2011$d20 + y2011$d40 + y2011$d60 + y2011$d80 + y2011$d100 )
+r1_y2011 <- lm(y2011$RI ~ y2011$SI + y2011$PAT  +  y2011$`Net sales`)
+summary(r1_y2011)
+summary(r_y2011)
+
+###TOBIT regression
+Result_y2011D <- censReg( y2011$RI ~ y2011$SI + y2011$PAT  + y2011$d20 + y2011$d40 + y2011$d60 + y2011$d80 + y2011$d100 )
+Result_y2011NS <- censReg( y2011$RI ~ y2011$SI + y2011$PAT  + y2011$`Net sales`)
+
+summary(Result_y2011NS)
+summary(Result_y2011D)
+
+TOBIT_MARGEFF_2011 = margEff(Result_y2011D)
+summary (TOBIT_MARGEFF_2011)
+
+tobit_eff_2011 = margEff(Result_y2011NS)
+summary(tobit_eff_2011)
+
+
+###OLS vs TOBIT 
+stargazer::stargazer(Result_y2011NS, r1_y2011, type = "text")
+
+###Saving data
+#write_xlsx(y2011, "C:\\Users\\91910\\Desktop\\dissertaion\\Data 3 for graphs\\y2011")
+
+
+```
+
+
+
+```{r}
+###Data read
+y2012 <- read_excel("C:/Users/91910/Desktop/dissertaion/Data 2 coz prowess sucks/H.xlsx", 
+    sheet = "2012")
+
+###Dummy setup
+x <- na.omit(y2012$`Net sales`)
+
+quantile(x , c(0.20,0.4,0.6,0.8,1))
+y <- (y2012$`Net sales`)
+
+
+y2012$d20 <- ifelse (y <= 8,"1","0")
+y2012$d40 <- ifelse (y > 9   & y <= 36, "1","0")
+y2012$d60 <- ifelse (y > 37 & y <= 98 , "1","0")
+y2012$d80 <- ifelse (y > 99 & y <=  309, "1","0")
+y2012$d100 <- ifelse (y > 310 & y <= 402179, "1","0")
+
+
+###OLS regression
+r_y2012 <- lm(y2012$RI ~ y2012$SI + y2012$PAT  + y2012$d20 + y2012$d40 + y2012$d60 + y2012$d80 + y2012$d100 )
+r1_y2012 <- lm(y2012$RI ~ y2012$SI + y2012$PAT  +  y2012$`Net sales`)
+summary(r1_y2012)
+summary(r_y2012)
+
+###TOBIT regression
+Result_y2012D <- censReg( y2012$RI ~ y2012$SI + y2012$PAT  + y2012$d20 + y2012$d40 + y2012$d60 + y2012$d80 + y2012$d100)
+Result_y2012NS <- censReg( y2012$RI ~ y2012$SI + y2012$PAT  + y2012$`Net sales`)
+summary(Result_y2012NS)
+summary(Result_y2012D)
+
+
+TOBIT_MARGEFF_2012 = margEff(Result_y2012D)
+summary (TOBIT_MARGEFF_2012)
+
+tobit_eff_2012 = margEff(Result_y2012NS)
+summary(tobit_eff_2012)
+
+###OLS vs TOBIT 
+stargazer::stargazer(Result_y2012NS, r1_y2012, type = "text")
+
+###Saving data
+#write_xlsx(y2012, "C:\\Users\\91910\\Desktop\\dissertaion\\Data 3 for graphs\\y2012")
+
+
+```
+
+```{r}
+###Data read
+y2013 <- read_excel("C:/Users/91910/Desktop/dissertaion/Data 2 coz prowess sucks/H.xlsx", 
+    sheet = "2013")
+
+###Dummy setup
+x <- na.omit(y2013$`Net sales`)
+
+
+y2013$d20 <- ifelse (y <= 11,"1","0")
+y2013$d40 <- ifelse (y > 12   & y <= 43, "1","0")
+y2013$d60 <- ifelse (y > 44 & y <= 114 , "1","0")
+y2013$d80 <- ifelse (y > 115 & y <=  358, "1","0")
+y2013$d100 <- ifelse (y > 359 & y <= 451142, "1","0")
+
+summary(y2013)
+
+###OLS regression
+r_y2013 <- lm(y2013$RI ~ y2013$SI + y2013$PAT  + y2013$d20 + y2013$d40 + y2013$d60 + y2013$d80 + y2013$d100 )
+r1_y2013 <- lm(y2013$RI ~ y2013$SI + y2013$PAT  +  y2013$`Net sales`)
+summary(r1_y2013)
+summary(r_y2013)
+
+###TOBIT regression
+Result_y2013D <- censReg( y2013$RI ~ y2013$SI + y2013$PAT  + y2013$d20 + y2013$d40 + y2013$d60 + y2013$d80 + y2013$d100)
+Result_y2013NS <- censReg( y2013$RI ~ y2013$SI + y2013$PAT  + y2013$`Net sales`)
+summary(Result_y2013NS)
+summary(Result_y2013D)
+
+TOBIT_MARGEFF_2013 = margEff(Result_y2013D)
+summary (TOBIT_MARGEFF_2013)
+
+tobit_eff_2013 = margEff(Result_y2013NS)
+summary(tobit_eff_2013)
+
+###OLS vs TOBIT 
+stargazer::stargazer(Result_y2013NS, r1_y2013, type = "text")
+
+###Saving data
+#write_xlsx(y2013, "C:\\Users\\91910\\Desktop\\dissertaion\\Data 3 for graphs\\y2013")
+
+```
+
+
+```{r}
+###Data read
+y2014 <- read_excel("C:/Users/91910/Desktop/dissertaion/Data 2 coz prowess sucks/H.xlsx", 
+    sheet = "2014")
+
+###Dummy setup
+x <- na.omit(y2014$`Net sales`)
+
+quantile(x , c(0.20,0.4,0.6,0.8,1))
+y <- (y2014$`Net sales`)
+
+
+y2014$d20 <- ifelse (y <= 13,"1","0")
+y2014$d40 <- ifelse (y > 14   & y <= 48, "1","0")
+y2014$d60 <- ifelse (y > 49 & y <= 121 , "1","0")
+y2014$d80 <- ifelse (y > 122 & y <=  334, "1","0")
+y2014$d100 <- ifelse (y > 335 & y <= 478457, "1","0")
+
+summary(y2014)
+
+###OLS regression
+r_y2014 <- lm(y2014$RI ~ y2014$SI + y2014$PAT  + y2014$d20 + y2014$d40 + y2014$d60 + y2014$d80 + y2014$d100 )
+r1_y2014 <- lm(y2014$RI ~ y2014$SI + y2014$PAT  +  y2014$`Net sales`)
+summary(r1_y2014)
+summary(r_y2014)
+
+###TOBIT regression
+Result_y2014D <- censReg( y2014$RI ~ y2014$SI + y2014$PAT  + y2014$d20 + y2014$d40 + y2014$d60 + y2014$d80 + y2014$d100)
+Result_y2014NS <- censReg( y2014$RI ~ y2014$SI + y2014$PAT  + y2014$`Net sales`)
+summary(Result_y2014NS)
+summary(Result_y2014D)
+
+TOBIT_MARGEFF_2014 = margEff(Result_y2014D)
+summary (TOBIT_MARGEFF_2014)
+
+tobit_eff_2014 = margEff(Result_y2014NS)
+summary(tobit_eff_2014)
+
+###OLS vs TOBIT 
+stargazer::stargazer(Result_y2014NS, r1_y2014, type = "text")
+
+###Saving data
+#write_xlsx(y2014, "C:\\Users\\91910\\Desktop\\dissertaion\\Data 3 for graphs\\y2014")
+
+```
+
+```{r}
+###Data read
+y2015 <- read_excel("C:/Users/91910/Desktop/dissertaion/Data 2 coz prowess sucks/H.xlsx", 
+    sheet = "2015")
+
+###Dummy setup
+x <- na.omit(y2015$`Net sales`)
+
+quantile(x , c(0.20,0.4,0.6,0.8,1))
+y <- (y2015$`Net sales`)
+
+
+y2015$d20 <- ifelse (y <= 11,"1","0")
+y2015$d40 <- ifelse (y > 12   & y <= 45, "1","0")
+y2015$d60 <- ifelse (y > 46 & y <= 117 , "1","0")
+y2015$d80 <- ifelse (y > 118 & y <=  335, "1","0")
+y2015$d100 <- ifelse (y > 336 & y <= 441719, "1","0")
+
+summary(y2015)
+
+###OLS regression
+r_y2015 <- lm(y2015$RI ~ y2015$SI + y2015$PAT  + y2015$d20 + y2015$d40 + y2015$d60 + y2015$d80 + y2015$d100 )
+r1_y2015 <- lm(y2015$RI ~ y2015$SI + y2015$PAT  +  y2015$`Net sales`)
+summary(r1_y2015)
+summary(r_y2015)
+
+###TOBIT regression
+Result_y2015D <- censReg( y2015$RI ~ y2015$SI + y2015$PAT  + y2015$d20 + y2015$d40 + y2015$d60 + y2015$d80 + y2015$d100)
+Result_y2015NS <- censReg( y2015$RI ~ y2015$SI + y2015$PAT  + y2015$`Net sales`)
+summary(Result_y2015NS)
+summary(Result_y2015D)
+
+TOBIT_MARGEFF_2015 = margEff(Result_y2015D)
+summary (TOBIT_MARGEFF_2015)
+
+tobit_eff_2015 = margEff(Result_y2015NS)
+summary(tobit_eff_2015)
+
+###OLS vs TOBIT 
+stargazer::stargazer(Result_y2015NS, r1_y2015, type = "text")
+
+###Saving data
+#write_xlsx(y2015, "C:\\Users\\91910\\Desktop\\dissertaion\\Data 3 for graphs\\y2015")
+
+```
+
+```{r}
+###Data read
+y2016 <- read_excel("C:/Users/91910/Desktop/dissertaion/Data 2 coz prowess sucks/H.xlsx", 
+    sheet = "2016")
+
+###Dummy setup
+x <- na.omit(y2016$`Net sales`)
+
+quantile(x , c(0.20,0.4,0.6,0.8,1))
+y <- (y2016$`Net sales`)
+
+
+y2016$d20 <- ifelse (y <= 10,"1","0")
+y2016$d40 <- ifelse (y > 11   & y <= 44, "1","0")
+y2016$d60 <- ifelse (y > 45 & y <= 113 , "1","0")
+y2016$d80 <- ifelse (y > 114 & y <=  326, "1","0")
+y2016$d100 <- ifelse (y > 327 & y <= 339408, "1","0")
+
+summary(y2016)
+
+###OLS regression
+r_y2016 <- lm(y2016$RI ~ y2016$SI + y2016$PAT  + y2016$d20 + y2016$d40 + y2016$d60 + y2016$d80 + y2016$d100 )
+r1_y2016 <- lm(y2016$RI ~ y2016$SI + y2016$PAT  +  y2016$`Net sales`)
+summary(r1_y2016)
+summary(r_y2016)
+
+###TOBIT regression
+Result_y2016D <- censReg( y2016$RI ~ y2016$SI +  y2016$PAT  + y2016$d20 + y2016$d40 + y2016$d60 + y2016$d80 + y2016$d100)
+Result_y2016NS <- censReg( y2016$RI ~ y2016$SI + y2016$PAT  + y2016$`Net sales`)
+summary(Result_y2016NS)
+summary(Result_y2016D)
+
+TOBIT_MARGEFF_2016 = margEff(Result_y2016D)
+summary (TOBIT_MARGEFF_2016)
+
+tobit_eff_2016 = margEff(Result_y2016NS)
+summary(tobit_eff_2016)
+
+###OLS vs TOBIT 
+stargazer::stargazer(Result_y2016NS, r1_y2016, type = "text")
+
+###Saving data
+#write_xlsx(y2016, "C:\\Users\\91910\\Desktop\\dissertaion\\Data 3 for graphs\\y2016")
+
+```
+
+```{r}
+###Data read
+y2017 <- read_excel("C:/Users/91910/Desktop/dissertaion/Data 2 coz prowess sucks/H.xlsx", 
+    sheet = "2017")
+
+###Dummy setup
+x <- na.omit(y2017$`Net sales`)
+
+quantile(x , c(0.20,0.4,0.6,0.8,1))
+y <- (y2017$`Net sales`)
+
+
+y2017$d20 <- ifelse (y <= 12,"1","0")
+y2017$d40 <- ifelse (y > 13  & y <= 45, "1","0")
+y2017$d60 <- ifelse (y > 46 & y <= 118 , "1","0")
+y2017$d80 <- ifelse (y > 119 & y <=  339, "1","0")
+y2017$d100 <- ifelse (y > 340 & y <= 365763, "1","0")
+
+summary(y2017)
+
+###OLS regression
+r_y2017 <- lm(y2017$RI ~ y2017$SI + y2017$PAT  + y2017$d20 + y2017$d40 + y2017$d60 + y2017$d80 + y2017$d100 )
+r1_y2017 <- lm(y2017$RI ~ y2017$SI + y2017$PAT  +  y2017$`Net sales`)
+summary(r1_y2017)
+summary(r_y2017)
+
+###TOBIT regression
+Result_y2017D <- censReg( y2017$RI ~ y2017$SI + y2017$PAT  + y2017$d20 + y2017$d40 + y2017$d60 + y2017$d80 + y2017$d100)
+Result_y2017NS <- censReg( y2017$RI ~ y2017$SI + y2017$PAT  + y2017$`Net sales`)
+summary(Result_y2017NS)
+summary(Result_y2017D)
+
+TOBIT_MARGEFF_2017 = margEff(Result_y2017D)
+summary (TOBIT_MARGEFF_2017)
+
+tobit_eff_2017 = margEff(Result_y2017NS)
+summary(tobit_eff_2017)
+
+###OLS vs TOBIT 
+stargazer::stargazer(Result_y2017NS, r1_y2017, type = "text")
+
+###Saving data
+#write_xlsx(y2017, "C:\\Users\\91910\\Desktop\\dissertaion\\Data 3 for graphs\\y2017")
+
+```
+
+
+```{r}
+###Data read
+y2018 <- read_excel("C:/Users/91910/Desktop/dissertaion/Data 2 coz prowess sucks/H.xlsx", 
+    sheet = "2018")
+
+###Dummy setup
+x <- na.omit(y2018$`Net sales`)
+
+quantile(x , c(0.20,0.4,0.6,0.8,1))
+y <- (y2018$`Net sales`)
+
+y2018$d20 <- ifelse (y <= 12,"1","0")
+y2018$d40 <- ifelse (y > 13 & y <= 50, "1","0")
+y2018$d60 <- ifelse (y > 51 & y <= 130 , "1","0")
+y2018$d80 <- ifelse (y > 131 & y <=  370, "1","0")
+y2018$d100 <- ifelse (y > 371 & y <= 418707, "1","0")
+
+summary(y2018)
+
+###OLS regression
+r_y2018 <- lm(y2018$RI ~ y2018$SI + y2018$PAT  + y2018$d20 + y2018$d40 + y2018$d60 + y2018$d80 + y2018$d100 )
+r1_y2018 <- lm(y2018$RI ~ y2018$SI + y2018$PAT  +  y2018$`Net sales`)
+summary(r1_y2018)
+summary(r_y2018)
+
+###TOBIT regression
+Result_y2018D <- censReg( y2018$RI ~ y2018$SI + y2018$PAT  + y2018$d20 + y2018$d40 + y2018$d60 + y2018$d80 + y2018$d100)
+Result_y2018NS <- censReg( y2018$RI ~ y2018$SI + y2018$PAT  + y2018$`Net sales`)
+summary(Result_y2018NS)
+summary(Result_y2018D)
+
+TOBIT_MARGEFF_2018 = margEff(Result_y2018D)
+summary (TOBIT_MARGEFF_2018)
+
+tobit_eff_2018 = margEff(Result_y2018NS)
+summary(tobit_eff_2018)
+
+###OLS vs TOBIT 
+stargazer::stargazer(Result_y2018NS, r1_y2018, type = "text")
+
+###Saving data
+#write_xlsx(y2018, "C:\\Users\\91910\\Desktop\\dissertaion\\Data 3 for graphs\\y2018")
+
+
+```
+
+```{r}
+###Data read
+y2019 <- read_excel("C:/Users/91910/Desktop/dissertaion/Data 2 coz prowess sucks/H.xlsx", 
+    sheet = "2019")
+
+###Dummy setup
+x <- na.omit(y2019$`Net sales`)
+
+quantile(x , c(0.20,0.4,0.6,0.8,1))
+y <- (y2019$`Net sales`)
+
+
+y2019$d20 <- ifelse (y <= 15,"1","0")
+y2019$d40 <- ifelse (y > 16   & y <= 58, "1","0")
+y2019$d60 <- ifelse (y > 59 & y <= 151 , "1","0")
+y2019$d80 <- ifelse (y > 152 & y <=  432, "1","0")
+y2019$d100 <- ifelse (y > 433 & y <= 535699, "1","0")
+
+summary(y2019)
+
+###OLS regression
+r_y2019 <- lm(y2019$RI ~ y2019$SI + y2019$PAT  + y2019$d20 + y2019$d40 + y2019$d60 + y2019$d80 + y2019$d100 )
+r1_y2019 <- lm(y2019$RI ~ y2019$SI + y2019$PAT  +  y2019$`Net sales`)
+summary(r1_y2019)
+summary(r_y2019)
+
+###TOBIT regression
+Result_y2019D <- censReg( y2019$RI ~ y2019$SI + y2019$PAT  + y2019$d20 + y2019$d40 + y2019$d60 + y2019$d80 + y2019$d100)
+Result_y2019NS <- censReg( y2019$RI ~ y2019$SI + y2019$PAT  + y2019$`Net sales`)
+summary(Result_y2019NS)
+summary(Result_y2019D)
+
+TOBIT_MARGEFF_2019 = margEff(Result_y2019D)
+summary (TOBIT_MARGEFF_2019)
+
+tobit_eff_2019 = margEff(Result_y2019NS)
+summary(tobit_eff_2019)
+
+###OLS vs TOBIT 
+stargazer::stargazer(Result_y2019NS, r1_y2019, type = "text")
+
+###Saving data
+write_xlsx(y2019, "C:\\Users\\91910\\Desktop\\dissertaion\\Data 3 for graphs\\y2019")
+
+```
+
+```{r}
+###Data read
+y2020 <- read_excel("C:/Users/91910/Desktop/dissertaion/Data 2 coz prowess sucks/H.xlsx", 
+    sheet = "2020")
+
+###Dummy setup
+x <- na.omit(y2020$`Net sales`)
+
+quantile(x , c(0.20,0.4,0.6,0.8,1))
+y <- (y2020$`Net sales`)
+
+
+y2020$d20 <- ifelse (y <= 14,"1","0")
+y2020$d40 <- ifelse (y > 15  & y <= 57, "1","0")
+y2020$d60 <- ifelse (y > 58 & y <= 147 , "1","0")
+y2020$d80 <- ifelse (y > 148 & y <=  430, "1","0")
+y2020$d100 <- ifelse (y > 431 & y <= 495414, "1","0")
+
+summary(y2020)
+
+###OLS regression
+r_y2020 <- lm(y2020$RI ~ y2020$SI + y2020$PAT  + y2020$d20 + y2020$d40 + y2020$d60 + y2020$d80 + y2020$d100 )
+r1_y2020 <- lm(y2020$RI ~ y2020$SI + y2020$PAT  +  y2020$`Net sales`)
+summary(r1_y2020)
+summary(r_y2020)
+
+###TOBIT regression
+Result_y2020D <- censReg( y2020$RI ~ y2020$SI + y2020$PAT  + y2020$d20 + y2020$d40 + y2020$d60 + y2020$d80 + y2020$d100)
+Result_y2020NS <- censReg( y2020$RI ~ y2020$SI + y2020$PAT  + y2020$`Net sales`)
+summary(Result_y2020NS)
+summary(Result_y2020D)
+
+TOBIT_MARGEFF_2020 = margEff(Result_y2020D)
+summary (TOBIT_MARGEFF_2020)
+
+tobit_eff_2020 = margEff(Result_y2020NS)
+summary(tobit_eff_2020)
+
+###OLS vs TOBIT 
+stargazer::stargazer(Result_y2020NS, r1_y2020, type = "text")
+
+###Saving data
+write_xlsx(y2020, "C:\\Users\\91910\\Desktop\\dissertaion\\Data 3 for graphs\\y2020")
+
+```
+
+
+```{r}
+###Data read
+y2021 <- read_excel("C:/Users/91910/Desktop/dissertaion/Data 2 coz prowess sucks/H.xlsx", 
+    sheet = "2021")
+
+###Dummy setup
+x <- na.omit(y2021$`Net sales`)
+
+quantile(x , c(0.20,0.4,0.6,0.8,1))
+y <- (y2021$`Net sales`)
+
+y2021$d20 <- ifelse (y <= 17,"1","0")
+y2021$d40 <- ifelse (y > 18  & y <= 62, "1","0")
+y2021$d60 <- ifelse (y > 63 & y <= 153 , "1","0")
+y2021$d80 <- ifelse (y > 154 & y <=  455, "1","0")
+y2021$d100 <- ifelse (y > 456 & y <= 384762, "1","0")
+
+summary(y2021)
+
+###OLS regression
+r_y2021 <- lm(y2021$RI ~ y2021$SI + y2021$PAT  + y2021$d20 + y2021$d40 + y2021$d60 + y2021$d80 + y2021$d100 )
+r1_y2021 <- lm(y2021$RI ~ y2021$SI + y2021$PAT  +  y2021$`Net sales`)
+summary(r1_y2021)
+summary(r_y2021)
+
+###TOBIT regression
+Result_y2021D <- censReg( y2021$RI ~ y2021$SI + y2021$PAT  + y2021$d20 + y2021$d40 + y2021$d60 + y2021$d80 + y2021$d100)
+Result_y2021NS <- censReg( y2021$RI ~ y2021$SI + y2021$PAT  + y2021$`Net sales`)
+summary(Result_y2021NS)
+summary(Result_y2021D)
+
+TOBIT_MARGEFF_2021 = margEff(Result_y2021D)
+summary (TOBIT_MARGEFF_2021)
+
+tobit_eff_2021 = margEff(Result_y2021NS)
+summary(tobit_eff_2021)
+
+
+###OLS vs TOBIT 
+stargazer::stargazer(Result_y2021NS, r1_y2021, type = "text")
+
+###Saving data
+#write_xlsx(y2021, "C:\\Users\\91910\\Desktop\\dissertaion\\Data 3 for graphs\\y2021")
+```
+
+
+
