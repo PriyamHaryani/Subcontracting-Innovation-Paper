@@ -1,6 +1,6 @@
 ---
 title: "Restructure"
-author: "PM"
+author: "PRIYAM"
 date: "2023-01-03"
 output:
   word_document: default
@@ -223,7 +223,7 @@ pnl_33<-subset(pnl, substr(pnl$NIC, 1, 2) == 33)
 ```{r}
 #Running the RegresSion Models with the new data structure. 
 
-###FE MODELs
+###FE MODEL
 
 grun.fe <- plm(Ri ~ Si + Pi  + Net.sales, data = pnl, model = "within")
 summary(grun.fe) 
