@@ -28,16 +28,15 @@ library(panelr)
 
 
 ```{r}
-D1="C:/Users/91910/Desktop/Me Mario/Papers/Subcontracting & Innovation"
-setwd(D1)
 
-df <- read_excel("C:/Users/91910/Desktop/Me Mario/Papers/Subcontracting & Innovation/Data 2/Data_11012023.xlsx", 
-    sheet = "Sheet3")
+df <- read_excel("C:/Users/91910/Desktop/Me MaRio/Papers/Subcontracting & Innovation/Data 2/Main Data Panel.xlsx")
 
 ```
 
 ```{r}
-#Changing the variable names 
+#Changing the vaRiable names 
+df$NIC2 <- substr(df$`NIC code`, 1, 2)
+
 
 names(df)[names(df) == "Year2"] <- "Year"
 names(df)[names(df) == "Year13"] <- "Year"
@@ -143,45 +142,6 @@ names(df)[names(df) == "Technical know-how fees and technical service fees108"] 
 names(df)[names(df) == "Technical know-how fees and technical service fees119"] <- "TK"
 
 
-names(df)[names(df) == "SI10"] <- "SI"
-names(df)[names(df) == "SI21"] <- "SI"
-names(df)[names(df) == "SI32"] <- "SI"
-names(df)[names(df) == "SI43"] <- "SI"
-names(df)[names(df) == "SI54"] <- "SI"
-names(df)[names(df) == "SI65"] <- "SI"
-names(df)[names(df) == "SI76"] <- "SI"
-names(df)[names(df) == "SI87"] <- "SI"
-names(df)[names(df) == "SI98"] <- "SI"
-names(df)[names(df) == "SI109"] <- "SI"
-names(df)[names(df) == "SI120"] <- "SI"
-
-names(df)[names(df) == "RI12"] <- "RI"
-names(df)[names(df) == "RI23"] <- "RI"
-names(df)[names(df) == "RI34"] <- "RI"
-names(df)[names(df) == "RI45"] <- "RI"
-names(df)[names(df) == "RI56"] <- "RI"
-names(df)[names(df) == "RI67"] <- "RI"
-names(df)[names(df) == "RI78"] <- "RI"
-names(df)[names(df) == "RI89"] <- "RI"
-names(df)[names(df) == "RI100"] <- "RI"
-names(df)[names(df) == "RI111"] <- "RI"
-names(df)[names(df) == "RI122"] <- "RI"
-
-
-names(df)[names(df)=="PI11"]<-"PI"
-names(df)[names(df)=="PI22"]<-"PI"
-names(df)[names(df)=="PI33"]<-"PI"
-names(df)[names(df)=="PI44"]<-"PI"
-names(df)[names(df)=="PI55"]<-"PI"
-names(df)[names(df)=="PI66"]<-"PI"
-names(df)[names(df)=="PI77"]<-"PI"
-names(df)[names(df)=="PI88"]<-"PI"
-names(df)[names(df)=="PI99"]<-"PI"
-names(df)[names(df)=="PI110"]<-"PI"
-names(df)[names(df)=="PI121"]<-"PI"
-
-
-
 
 
 
@@ -198,7 +158,7 @@ names(df)[names(df) == "NIC code"] <- "NIC"
 
 ```{r}
 #Have made a new panel data using just the companies as the index 
-#Then I removed the columns in excel, keeping only the CC, NIC, Years, SI, RI and PI Values
+
 #The lines of code given below are for making the data and making the data available as csv format. 
 
 E3<-pdata.frame(df, index=("CC"), drop.index=TRUE, row.names=TRUE)
@@ -206,16 +166,26 @@ E3<-pdata.frame(df, index=("CC"), drop.index=TRUE, row.names=TRUE)
 
  
  
-#This is the data that converts the data into longitudnal data structure that we are looking for. 
+#This is the data that converts the data into longitudinal data structure that we are looking for. 
 E3.2<-read.csv("DATA.csv")
 str(E3.2)
 
-pnl<- long_panel(E3.2, prefix = ".", begin = 1, end = 11, id = "X", as_panel_data = T)
-pnl$NIC_2<-substr(pnl$NIC, 1, 2)
+pnl<- long_panel(E3.2, prefix = ".", begin = 1, end = 9, id = "X", as_panel_data = T)
+```
 
+
+```{r}
+pnl$Si = pnl$SUB / pnl$Net.sales
+pnl$Ri = pnl$R.D / pnl$Net.sales
+pnl$Pi = pnl$PAT / pnl$Net.sales
+pnl$Ti = pnl$TK / pnl$Net.sales
+pnl$NPMi = pnl$NPM / pnl$Net.sales
+#write.csv(pnl, file = "panel.csv")
 
 
 ```
+
+
 
 ```{r}
 #NIC Sets
@@ -251,16 +221,16 @@ pnl_33<-subset(pnl, substr(pnl$NIC, 1, 2) == 33)
 ```
 
 ```{r}
-#Running the Regression Models with the new data structure. 
+#Running the RegresSion Models with the new data structure. 
 
 ###FE MODELs
 
-grun.fe <- plm(RI ~ SI + PI + Net.sales, data = pnl, model = "within")
-summary(grun.fe)
+grun.fe <- plm(Ri ~ Si + Pi  + Net.sales, data = pnl, model = "within")
+summary(grun.fe) 
 nobs(grun.fe)
 
 ###RANDOM MODEL
-grun.re2 <- plm(RI ~ SI + PI + Net.sales , data = pnl, model = "random")
+grun.re2 <- plm(Ri ~ Si + Pi +  Net.sales, data = pnl, model = "random")
 summary(grun.re2)
 nobs(grun.re2)
 
@@ -268,8 +238,10 @@ nobs(grun.re2)
 ###Hausman test
 ## If p-value is < 0.05 then use fixed effects
 phtest(grun.fe, grun.re2)
+```
 
-panelResult <- censReg( RI ~ SI + PI + Net.sales , data = pnl)
+```{r}
+panelResult <- censReg( Ri ~ Si + Pi + Net.sales, data = pnl)
 
 summary (panelResult)
 
@@ -277,162 +249,142 @@ summary (panelResult)
 ```
 
 
-
-
-
 ```{r}
-#BHHH Reg Test
-Reg_10<-censReg(RI ~ SI + PI + Net.sales, data = pnl_10, method = "BHHH")
-summary(Reg_10)
+###Without CensReg
+Reg_10a<- plm(Ri ~ Si + Pi + Net.sales, data = pnl_10)
+summary(Reg_10a)
 
-Reg_11<-censReg(RI ~ SI + PI + Net.sales, data = pnl_11, method = "BHHH")
-summary(Reg_11)
+Reg_11a<- plm(Ri ~ Si + Pi + Net.sales, data = pnl_11)
+summary(Reg_11a)
 
-Reg_12<-censReg(RI ~ SI + PI + Net.sales, data = pnl_12, method = "BHHH")
-summary(Reg_12)
+Reg_12a<- plm(Ri ~ Si + Pi + Net.sales, data = pnl_12)
+summary(Reg_12a)
 
-Reg_13<-censReg(RI ~ SI + PI + Net.sales, data = pnl_13, method = "BHHH")
-summary(Reg_13)
+Reg_13a<- plm(Ri ~ Si + Pi + Net.sales, data = pnl_13)
+summary(Reg_13a)
 
-Reg_14<-censReg(RI ~ SI + PI + Net.sales, data = pnl_14, method = "BHHH")
-summary(Reg_14)
+Reg_14a<- plm(Ri ~ Si + Pi + Net.sales, data = pnl_14)
+summary(Reg_14a)
 
-Reg_15<-censReg(RI ~ SI + PI + Net.sales, data = pnl_15, method = "BHHH")
-summary(Reg_15)
+#Reg_15a<- plm(Ri ~ Si + Pi + Net.sales, data = pnl_15, model  = "within")
+#summary(Reg_15a)
 
+Reg_16a<- plm(Ri ~ Si + Pi + Net.sales, data = pnl_16)
+summary(Reg_16a)
 
-Reg_16<-censReg(RI ~ SI + PI + Net.sales, data = pnl_16, method = "BHHH")
-summary(Reg_16)
+Reg_17a<- plm(Ri ~ Si + Pi + Net.sales, data = pnl_17)
+summary(Reg_17a)
 
-Reg_17<-censReg(RI ~ SI + PI + Net.sales, data = pnl_17, method = "BHHH")
-summary(Reg_17)
+Reg_18a<- plm(Ri ~ Si + Pi + Net.sales, data = pnl_18)
+summary(Reg_18a)
 
-Reg_18<-censReg(RI ~ SI + PI + Net.sales, data = pnl_18, method = "BHHH")
-summary(Reg_18)
+#Reg_19a<- plm(Ri ~ Si + Pi + Net.sales, data = pnl_19)
+#summary(Reg_19a)
 
-Reg_19<-censReg(RI ~ SI + PI + Net.sales, data = pnl_19, method = "BHHH")
-summary(Reg_19)
+Reg_20a<- plm(Ri ~ Si + Pi + Net.sales, data = pnl_20)
+summary(Reg_20a)
 
-Reg_20<-censReg(RI ~ SI + PI + Net.sales, data = pnl_20, method = "BHHH")
-summary(Reg_20)
+Reg_21a<- plm(Ri ~ Si + Pi + Net.sales, data = pnl_21)
+summary(Reg_21a)
 
-Reg_21<-censReg(RI ~ SI + PI + Net.sales, data = pnl_21, method = "BHHH")
-summary(Reg_21)
+Reg_22a<- plm(Ri ~ Si + Pi + Net.sales, data = pnl_22)
+summary(Reg_22a)
 
-Reg_22<-censReg(RI ~ SI + PI + Net.sales, data = pnl_22, method = "BHHH")
-summary(Reg_22)
+Reg_23a<- plm(Ri ~ Si + Pi + Net.sales, data = pnl_23)
+summary(Reg_23a)
 
-Reg_23<-censReg(RI ~ SI + PI + Net.sales, data = pnl_23, method = "BHHH")
-summary(Reg_23)
+Reg_24a<- plm(Ri ~ Si + Pi + Net.sales, data = pnl_24)
+summary(Reg_24a)
 
+Reg_25a<- plm(Ri ~ Si + Pi + Net.sales, data = pnl_25)
+summary(Reg_25a)
 
-Reg_24<-censReg(RI ~ SI + PI + Net.sales, data = pnl_24, method = "BHHH")
-summary(Reg_24)
+Reg_26a<- plm(Ri ~ Si + Pi + Net.sales, data = pnl_26)
+summary(Reg_26a)
 
-Reg_25<-censReg(RI ~ SI + PI + Net.sales, data = pnl_25, method = "BHHH")
-summary(Reg_25)
+Reg_27a<- plm(Ri ~ Si + Pi + Net.sales, data = pnl_27)
+summary(Reg_27a)
 
-Reg_26<-censReg(RI ~ SI + PI + Net.sales, data = pnl_26, method = "BHHH")
-summary(Reg_26)
+Reg_28a<- plm(Ri ~ Si + Pi + Net.sales, data = pnl_28)
+summary(Reg_28a)
 
-Reg_27<-censReg(RI ~ SI + PI + Net.sales, data = pnl_27, method = "BHHH")
-summary(Reg_27)
+Reg_29a<- plm(Ri ~ Si + Pi + Net.sales, data = pnl_29)
+summary(Reg_29a)
 
-Reg_28<-censReg(RI ~ SI + PI + Net.sales, data = pnl_28, method = "BHHH")
-summary(Reg_28)
+Reg_30a<- plm(Ri ~ Si + Pi + Net.sales, data = pnl_30)
+summary(Reg_30a)
 
-Reg_29<-censReg(RI ~ SI + PI + Net.sales, data = pnl_29, method = "BHHH")
-summary(Reg_29)
+#Reg_31a<- plm(Ri ~ Si + Pi + Net.sales, data = pnl_31)
+#summary(Reg_31a)
 
-Reg_30<-censReg(RI ~ SI + PI + Net.sales, data = pnl_30, method = "BHHH")
-summary(Reg_30)
+Reg_32a<- plm(Ri ~ Si + Pi + Net.sales, data = pnl_32)
+summary(Reg_32a)
 
-Reg_31<-censReg(RI ~ SI + PI + Net.sales, data = pnl_31, method = "BHHH")
-summary(Reg_31)
-
-Reg_32<-censReg(RI ~ SI + PI + Net.sales, data = pnl_32, method = "BHHH")
-summary(Reg_32)
-
-
+#Reg_33a<- plm(Ri ~ Si + Pi + Net.sales, data = pnl_33)
+#summary(Reg_33a)
 ```
 
+
+
+
 ```{r}
-###Without BHHH
-Reg_10b<-censReg(RI ~ SI + PI + Net.sales, data = pnl_10)
+###With CensReg
+Reg_10b<- censReg(Ri ~ Si + Pi + Net.sales, data = pnl_10)
 summary(Reg_10b)
 
-Reg_11b<-censReg(RI ~ SI + PI + Net.sales, data = pnl_11)
+Reg_11b<- censReg(Ri ~ Si + Pi + Net.sales, data = pnl_11)
 summary(Reg_11b)
 
-Reg_12b<-censReg(RI ~ SI + PI + Net.sales, data = pnl_12)
-summary(Reg_12b)
+#Reg_12b<- censReg(Ri ~ Si + Pi + Net.sales, data = pnl_12) {NO Cens term}
+#summary(Reg_12b)
 
-Reg_13b<-censReg(RI ~ SI + PI + Net.sales, data = pnl_13)
+Reg_13b<- censReg(Ri ~ Si + Pi + Net.sales, data = pnl_13)
 summary(Reg_13b)
 
-Reg_14b<-censReg(RI ~ SI + PI + Net.sales, data = pnl_14)
+Reg_14b<- censReg(Ri ~ Si + Pi + Net.sales, data = pnl_14)
 summary(Reg_14b)
 
-Reg_15b<-censReg(RI ~ SI + PI + Net.sales, data = pnl_15)
-summary(Reg_15b)
+#Reg_15b<- censReg(Ri ~ Si + Pi + Net.sales, data = pnl_15) {NO Cens term}
+#summary(Reg_15b)
 
 
-Reg_16b<-censReg(RI ~ SI + PI + Net.sales, data = pnl_16)
-summary(Reg_16b)
+#Reg_16b<- censReg(Ri ~ Si + Pi + Net.sales, data = pnl_16) {NO Cens term}
+#summary(Reg_16b)
 
-Reg_17b<-censReg(RI ~ SI + PI + Net.sales, data = pnl_17)
-summary(Reg_17b)
+#Reg_17b<- censReg(Ri ~ Si + Pi + Net.sales, data = pnl_17) {NO Cens term}
+#summary(Reg_17b)
 
-Reg_18b<-censReg(RI ~ SI + PI + Net.sales, data = pnl_18)
-summary(Reg_18b)
+#Reg_18b<- censReg(Ri ~ Si + Pi + Net.sales, data = pnl_18) {NO Cens term}
+#summary(Reg_18b)
 
-Reg_19b<-censReg(RI ~ SI + PI + Net.sales, data = pnl_19)
+Reg_19b<- censReg(Ri ~ Si + Pi + Net.sales, data = pnl_19)
 summary(Reg_19b)
 
-Reg_20b<-censReg(RI ~ SI + PI + Net.sales, data = pnl_20)
+Reg_20b<- censReg(Ri ~ Si + Pi + Net.sales, data = pnl_20)
 summary(Reg_20b)
 
-Reg_21b<-censReg(RI ~ SI + PI + Net.sales, data = pnl_21)
+Reg_21b<- censReg(Ri ~ Si + Pi + Net.sales, data = pnl_21)
 summary(Reg_21b)
 
-Reg_22b<-censReg(RI ~ SI + PI + Net.sales, data = pnl_22)
+Reg_22b<- censReg(Ri ~ Si + Pi + Net.sales, data = pnl_22)
 summary(Reg_22b)
 
-Reg_23b<-censReg(RI ~ SI + PI + Net.sales, data = pnl_23)
+Reg_23b<- censReg(Ri ~ Si + Pi + Net.sales, data = pnl_23)
 summary(Reg_23b)
 
-
-Reg_24b<-censReg(RI ~ SI + PI + Net.sales, data = pnl_24)
+Reg_24b<- censReg(Ri ~ Si + Pi + Net.sales, data = pnl_24)
 summary(Reg_24b)
 
-Reg_25b<-censReg(RI ~ SI + PI + Net.sales, data = pnl_25)
+Reg_25b<- censReg(Ri ~ Si + Pi + Net.sales, data = pnl_25)
 summary(Reg_25b)
 
-Reg_26b<-censReg(RI ~ SI + PI + Net.sales, data = pnl_26)
+Reg_26b<- censReg(Ri ~ Si + Pi + Net.sales, data = pnl_26)
 summary(Reg_26b)
 
-Reg_27b<-censReg(RI ~ SI + PI + Net.sales, data = pnl_27)
+Reg_27b<- censReg(Ri ~ Si + Pi + Net.sales, data = pnl_27)
 summary(Reg_27b)
 ```
 
-```{r}
-Reg_28b<-censReg(RI ~ SI + PI + Net.sales +tk, data = pnl_28)
-summary(Reg_28b)
-
-Reg_29b<-censReg(RI ~ SI + PI + Net.sales, data = pnl_29)
-summary(Reg_29b)
-```
-Reg_30b<-censReg(RI ~ SI + PI + Net.sales, data = pnl_30)
-summary(Reg_30b)
-
-Reg_31b<-censReg(RI ~ SI + PI + Net.sales, data = pnl_31)
-summary(Reg_31b)
-
-Reg_32b<-censReg(RI ~ SI + PI + Net.sales, data = pnl_32)
-summary(Reg_32b)
-
-
-```
 
 
 
