@@ -1,0 +1,710 @@
+---
+title: "Restructure"
+author: "PM"
+date: "2023-01-03"
+output:
+  word_document: default
+  html_document: default
+---
+
+
+```{r}
+#Libaries used in Project
+library(tidyverse)
+library(readxl)
+library(stargazer)
+library(magrittr)
+library(haven)
+library(plm)
+library(ggplot2)
+library(dplyr)
+library(VGAM)
+library(car)
+library(censReg)
+library(factoextra)
+library(writexl)
+library(Rserve)
+library(scales)
+library(pastecs)
+library(panelr)
+library(tidyverse)
+```
+
+
+```{r}
+#Adding Data
+
+df <- read_excel("/Main Data Panel.xlsx", 
+    sheet = "Sheet1")
+
+```
+
+
+```{r}
+#Adding NIC 2 digit Column 
+df$NIC2 <- substr(df$`NIC code`, 1, 2)
+```
+
+
+```{r}
+#Changing the variable names to make them non-unique
+names(df)[names(df) == "Year2"] <- "Year"
+names(df)[names(df) == "Year13"] <- "Year"
+names(df)[names(df) == "Year24"] <- "Year"
+names(df)[names(df) == "Year35"] <- "Year"
+names(df)[names(df) == "Year46"] <- "Year"
+names(df)[names(df) == "Year57"] <- "Year"
+names(df)[names(df) == "Year68"] <- "Year"
+names(df)[names(df) == "Year79"] <- "Year"
+names(df)[names(df) == "Year90"] <- "Year"
+names(df)[names(df) == "Year101"] <- "Year"
+names(df)[names(df) == "Year112"] <- "Year"
+
+names(df)[names(df) == "Y2"] <- "Year"
+names(df)[names(df) == "Y3"] <- "Year"
+names(df)[names(df) == "Y4"] <- "Year"
+names(df)[names(df) == "Y5"] <- "Year"
+names(df)[names(df) == "Y6"] <- "Year"
+names(df)[names(df) == "Y7"] <- "Year"
+names(df)[names(df) == "Y8"] <- "Year"
+names(df)[names(df) == "Y9"] <- "Year"
+names(df)[names(df) == "Y10"] <- "Year"
+names(df)[names(df) == "Y1"] <- "Year"
+
+
+
+names(df)[names(df) == "Job-work income"] <- "SUB"
+names(df)[names(df) == "Job-work income3"] <- "SUB"
+names(df)[names(df) == "Job-work income14"] <- "SUB"
+names(df)[names(df) == "Job-work income25"] <- "SUB"
+names(df)[names(df) == "Job-work income36"] <- "SUB"
+names(df)[names(df) == "Job-work income47"] <- "SUB"
+names(df)[names(df) == "Job-work income58"] <- "SUB"
+names(df)[names(df) == "Job-work income69"] <- "SUB"
+names(df)[names(df) == "Job-work income80"] <- "SUB"
+names(df)[names(df) == "Job-work income91"] <- "SUB"
+names(df)[names(df) == "Job-work income102"] <- "SUB"
+names(df)[names(df) == "Job-work income113"] <- "SUB"
+
+names(df)[names(df) == "Profit after tax"] <- "PAT"
+names(df)[names(df) == "Profit after tax4"] <- "PAT"
+names(df)[names(df) == "Profit after tax15"] <- "PAT"
+names(df)[names(df) == "Profit after tax26"] <- "PAT"
+names(df)[names(df) == "Profit after tax37"] <- "PAT"
+names(df)[names(df) == "Profit after tax48"] <- "PAT"
+names(df)[names(df) == "Profit after tax59"] <- "PAT"
+names(df)[names(df) == "Profit after tax70"] <- "PAT"
+names(df)[names(df) == "Profit after tax81"] <- "PAT"
+names(df)[names(df) == "Profit after tax92"] <- "PAT"
+names(df)[names(df) == "Profit after tax103"] <- "PAT"
+names(df)[names(df) == "Profit after tax114"] <- "PAT"
+
+names(df)[names(df) == "Research & development expenses - current account"] <- "R&D"
+names(df)[names(df) == "Research & development expenses - current account5"] <- "R&D"
+names(df)[names(df) == "Research & development expenses - current account16"] <- "R&D"
+names(df)[names(df) == "Research & development expenses - current account27"] <- "R&D"
+names(df)[names(df) == "Research & development expenses - current account38"] <- "R&D"
+names(df)[names(df) == "Research & development expenses - current account49"] <- "R&D"
+names(df)[names(df) == "Research & development expenses - current account60"] <- "R&D"
+names(df)[names(df) == "Research & development expenses - current account71"] <- "R&D"
+names(df)[names(df) == "Research & development expenses - current account82"] <- "R&D"
+names(df)[names(df) == "Research & development expenses - current account93"] <- "R&D"
+names(df)[names(df) == "Research & development expenses - current account104"] <- "R&D"
+names(df)[names(df) == "Research & development expenses - current account115"] <- "R&D"
+
+names(df)[names(df) == "Net sales6"] <- "Net sales"
+names(df)[names(df) == "Net sales17"] <- "Net sales"
+names(df)[names(df) == "Net sales28"] <- "Net sales"
+names(df)[names(df) == "Net sales39"] <- "Net sales"
+names(df)[names(df) == "Net sales50"] <- "Net sales"
+names(df)[names(df) == "Net sales61"] <- "Net sales"
+names(df)[names(df) == "Net sales72"] <- "Net sales"
+names(df)[names(df) == "Net sales83"] <- "Net sales"
+names(df)[names(df) == "Net sales94"] <- "Net sales"
+names(df)[names(df) == "Net sales105"] <- "Net sales"
+names(df)[names(df) == "Net sales116"] <- "Net sales"
+
+names(df)[names(df) == "Net plant and machinery"] <- "NPM"
+names(df)[names(df) == "Net plant and machinery7"] <- "NPM"
+names(df)[names(df) == "Net plant and machinery18"] <- "NPM"
+names(df)[names(df) == "Net plant and machinery29"] <- "NPM"
+names(df)[names(df) == "Net plant and machinery40"] <- "NPM"
+names(df)[names(df) == "Net plant and machinery51"] <- "NPM"
+names(df)[names(df) == "Net plant and machinery62"] <- "NPM"
+names(df)[names(df) == "Net plant and machinery73"] <- "NPM"
+names(df)[names(df) == "Net plant and machinery84"] <- "NPM"
+names(df)[names(df) == "Net plant and machinery95"] <- "NPM"
+names(df)[names(df) == "Net plant and machinery106"] <- "NPM"
+names(df)[names(df) == "Net plant and machinery117"] <- "NPM"
+
+names(df)[names(df) == "Salaries, wages, bonus, ex gratia pf & gratuities paid"] <- "Sal&Wag"
+names(df)[names(df) == "Salaries, wages, bonus, ex gratia pf & gratuities paid8"] <- "Sal&Wag"
+names(df)[names(df) == "Salaries, wages, bonus, ex gratia pf & gratuities paid19"] <- "Sal&Wag"
+names(df)[names(df) == "Salaries, wages, bonus, ex gratia pf & gratuities paid30"] <- "Sal&Wag"
+names(df)[names(df) == "Salaries, wages, bonus, ex gratia pf & gratuities paid41"] <- "Sal&Wag"
+names(df)[names(df) == "Salaries, wages, bonus, ex gratia pf & gratuities paid52"] <- "Sal&Wag"
+names(df)[names(df) == "Salaries, wages, bonus, ex gratia pf & gratuities paid63"] <- "Sal&Wag"
+names(df)[names(df) == "Salaries, wages, bonus, ex gratia pf & gratuities paid74"] <- "Sal&Wag"
+names(df)[names(df) == "Salaries, wages, bonus, ex gratia pf & gratuities paid85"] <- "Sal&Wag"
+names(df)[names(df) == "Salaries, wages, bonus, ex gratia pf & gratuities paid96"] <- "Sal&Wag"
+names(df)[names(df) == "Salaries, wages, bonus, ex gratia pf & gratuities paid107"] <- "Sal&Wag"
+names(df)[names(df) == "Salaries, wages, bonus, ex gratia pf & gratuities paid118"] <- "Sal&Wag"
+
+names(df)[names(df) == "Technical know-how fees and technical service fees"] <- "TK"
+names(df)[names(df) == "Technical know-how fees and technical service fees9"] <- "TK"
+names(df)[names(df) == "Technical know-how fees and technical service fees20"] <- "TK"
+names(df)[names(df) == "Technical know-how fees and technical service fees31"] <- "TK"
+names(df)[names(df) == "Technical know-how fees and technical service fees42"] <- "TK"
+names(df)[names(df) == "Technical know-how fees and technical service fees53"] <- "TK"
+names(df)[names(df) == "Technical know-how fees and technical service fees64"] <- "TK"
+names(df)[names(df) == "Technical know-how fees and technical service fees75"] <- "TK"
+names(df)[names(df) == "Technical know-how fees and technical service fees86"] <- "TK"
+names(df)[names(df) == "Technical know-how fees and technical service fees97"] <- "TK"
+names(df)[names(df) == "Technical know-how fees and technical service fees108"] <- "TK"
+names(df)[names(df) == "Technical know-how fees and technical service fees119"] <- "TK"
+
+names(df)[names(df) == "Company Name"] <- "CC"
+names(df)[names(df) == "NIC code"] <- "NIC"
+```
+
+
+```{r}
+#Converting new panel data using just the companies as the index 
+#The lines of code given below are for making the data and making the data available as csv format. 
+E3<-pdata.frame(df, index=("CC"), drop.index=TRUE, row.names=TRUE)
+ write.csv(E3, file = "DATA.csv")
+ 
+#This is the data that converts the data into longitudinal data structure 
+E3.2<-read.csv("DATA.csv")
+str(E3.2)
+pnl<- long_panel(E3.2, prefix = ".", begin = 1, end = 10, id = "X", as_panel_data = T)
+```
+
+
+```{r}
+#Calculating Intensity
+pnl$Si = (pnl$SUB / pnl$Net.sales) * 100 
+pnl$Ri = (pnl$R.D / pnl$Net.sales) * 100
+pnl$Pi = (pnl$PAT / pnl$Net.sales) * 100
+pnl$Ti = (pnl$TK / pnl$Net.sales) * 100
+pnl$NPMi = (pnl$NPM / pnl$Net.sales)  * 100
+#write.csv(pnl, file = "panel.csv")
+```
+
+```{r}
+Ri.lt.0 <- subset(pnl, Ri < 0)
+Ri.eq.0 <- subset(pnl, Ri == 0)
+Ri.gt.0 <- subset(pnl, Ri > 0)
+Ri.is.NA <- pnl[is.na(pnl$Ri), ]
+
+Rd.lt.0 <- subset(pnl, R.D < 0)
+Rd.eq.0 <- subset(pnl, R.D == 0)
+Rd.gt.0 <- subset(pnl, R.D > 0)
+Rd.is.NA <- pnl[is.na(pnl$R.D), ]
+
+Si.lt.0 <- subset(pnl, Si < 0)
+Si.eq.0 <- subset(pnl, Si == 0)
+Si.gt.0 <- subset(pnl, Si > 0)
+Si.is.NA <- pnl[is.na(pnl$Si), ]
+
+Pi.lt.0 <- subset(pnl, Pi < 0)
+Pi.eq.0 <- subset(pnl, Pi == 0)
+Pi.gt.0 <- subset(pnl, Pi > 0)
+Pi.is.NA <- pnl[is.na(pnl$Pi), ]
+
+NS.lt.0 <- subset(pnl, Net.sales < 0)
+NS.eq.0 <- subset(pnl, Net.sales == 0)
+NS.gt.0 <- subset(pnl, Net.sales > 0)
+NS.is.NA <- pnl[is.na(pnl$Net.sales), ]
+
+SUB.lt.0 <- subset(pnl, SUB < 0)
+SUB.eq.0 <- subset(pnl, SUB == 0)
+SUB.gt.0 <- subset(pnl, SUB > 0)
+SUB.is.NA <- pnl[is.na(pnl$SUB), ]
+```
+
+```{r}
+RD.ps <- rbind(Rd.eq.0, Rd.gt.0)
+#write.csv(RD.ps, file = "RD.ps.csv")
+
+Ri1.lt.0 <- subset(RD.ps, Ri < 0)
+Ri1.eq.0 <- subset(RD.ps, Ri == 0)
+Ri1.gt.0 <- subset(RD.ps, Ri > 0)
+Ri1.is.NA <- RD.ps[is.na(RD.ps$Ri), ]
+
+
+Si1.lt.0 <- subset(RD.ps, Si < 0)
+Si1.eq.0 <- subset(RD.ps, Si == 0)
+Si1.gt.0 <- subset(RD.ps, Si > 0)
+Si1.is.NA <- RD.ps[is.na(RD.ps$Si), ]
+```
+
+
+
+
+```{r}
+# panel model (just testing)
+RD.ps.ols <- plm(Ri ~ Si + Pi  + Net.sales , data = RD.ps, model = "pooling")
+summary(RD.ps.ols) 
+
+RD.ps.fe <- plm(Ri ~ Si + Pi  + Net.sales , data = RD.ps, model = "within")
+summary(RD.ps.fe)
+
+RD.ps.rd <- plm(Ri ~ Si + Pi  + Net.sales , data = RD.ps, model = "random")
+summary(RD.ps.rd) 
+
+RD.ps.fd <- plm(Ri ~ Si + Pi  + Net.sales , data = RD.ps, model = "fd")
+summary(RD.ps.fd) 
+
+RD.ps.be <- plm(Ri ~ Si + Pi  + Net.sales , data = RD.ps, model = "between")
+summary(RD.ps.be) 
+
+
+```
+
+```{r}
+#Lags
+RD.ps.lag1 <- plm(Ri ~ lag(Si,1) + Pi  + Net.sales , data = RD.ps, model = "within")
+summary(RD.ps.lag1)
+
+RD.ps.lag2 <- plm(Ri ~ lag(Si,2) + Pi  + Net.sales , data = RD.ps, model = "within")
+summary(RD.ps.lag2)
+
+RD.ps.tobit.lag1 <- censReg( Ri ~ lag(Si,1) + Pi + Net.sales, data = RD.ps, left = 0)
+
+summary (RD.ps.tobit.lag1)
+
+RD.ps.tobit.lag2 <- censReg( Ri ~ lag(Si,2) + Pi + Net.sales, data = RD.ps, left = 0)
+
+summary (RD.ps.tobit.lag2)
+
+```
+
+```{r}
+###Tobit Model
+RD.ps.tobit <- censReg( Ri ~ Si + Pi + Net.sales, data = RD.ps, left = 0)
+
+summary (RD.ps.tobit)
+
+```
+
+
+
+```{r}
+#Creating panel NIC Sets
+
+RD.ps_10<-subset(RD.ps, substr(RD.ps$NIC, 1, 2) == 10)
+RD.ps_11<-subset(RD.ps, substr(RD.ps$NIC, 1, 2) == 11)
+RD.ps_12<-subset(RD.ps, substr(RD.ps$NIC, 1, 2) == 12)
+RD.ps_13<-subset(RD.ps, substr(RD.ps$NIC, 1, 2) == 13)
+RD.ps_14<-subset(RD.ps, substr(RD.ps$NIC, 1, 2) == 14)
+RD.ps_15<-subset(RD.ps, substr(RD.ps$NIC, 1, 2) == 15)
+RD.ps_16<-subset(RD.ps, substr(RD.ps$NIC, 1, 2) == 16)
+RD.ps_17<-subset(RD.ps, substr(RD.ps$NIC, 1, 2) == 17)
+RD.ps_18<-subset(RD.ps, substr(RD.ps$NIC, 1, 2) == 18)
+RD.ps_19<-subset(RD.ps, substr(RD.ps$NIC, 1, 2) == 19)
+RD.ps_20<-subset(RD.ps, substr(RD.ps$NIC, 1, 2) == 20)
+RD.ps_21<-subset(RD.ps, substr(RD.ps$NIC, 1, 2) == 21)
+RD.ps_22<-subset(RD.ps, substr(RD.ps$NIC, 1, 2) == 22)
+RD.ps_23<-subset(RD.ps, substr(RD.ps$NIC, 1, 2) == 23)
+RD.ps_24<-subset(RD.ps, substr(RD.ps$NIC, 1, 2) == 24)
+RD.ps_25<-subset(RD.ps, substr(RD.ps$NIC, 1, 2) == 25)
+RD.ps_26<-subset(RD.ps, substr(RD.ps$NIC, 1, 2) == 26)
+RD.ps_27<-subset(RD.ps, substr(RD.ps$NIC, 1, 2) == 27)
+RD.ps_28<-subset(RD.ps, substr(RD.ps$NIC, 1, 2) == 28)
+RD.ps_29<-subset(RD.ps, substr(RD.ps$NIC, 1, 2) == 29)
+RD.ps_30<-subset(RD.ps, substr(RD.ps$NIC, 1, 2) == 30)
+RD.ps_31<-subset(RD.ps, substr(RD.ps$NIC, 1, 2) == 31)
+RD.ps_32<-subset(RD.ps, substr(RD.ps$NIC, 1, 2) == 32)
+RD.ps_33<-subset(RD.ps, substr(RD.ps$NIC, 1, 2) == 33)
+```
+
+```{r}
+# Checking for missing values
+sum(is.na(RD.ps[,c("Ri","Si","Pi","Net.sales")]))
+
+is.numeric("Ri")
+is.numeric("Si")
+is.numeric("Pi")
+is.numeric("Net.sales")
+
+# Removing missing values
+RD.ps_complete = na.omit(RD.ps[,c("Ri","Si","Pi","Net.sales")])
+
+# Calculating the variance-covariance matrix
+varcov = cov(RD.ps_complete)
+varcov
+
+# correlation matrix.
+RD.ps.Cocov <- cov2cor(varcov)
+RD.ps.Cocov
+
+```
+
+
+```{r}
+# create a model for 
+model <- lm(Ri ~ Si + Pi + Net.sales, data = RD.ps)
+
+# calculate the VIF values
+vif <- vif(model)
+vif
+```
+
+
+```{r}
+##NIC 2 digit code grouped by ISIC classification of manufacturing industry 
+
+#Group 1: Food, Beverages, and Tobacco (ISIC Division 10)
+G1 <- subset(RD.ps, NIC2 %in% c(10,11, 12))
+
+#Group 2: Textiles, Clothing, Leather, and Footwear (ISIC Division 13)
+G2 <- subset(RD.ps, NIC2 %in% c(13,14, 15))
+
+#Group 3: Wood, Paper, and Printing (ISIC Division 16)
+G3 <- subset(RD.ps, NIC2 %in% c(16,17, 18))
+
+#Group 4: Chemicals and Chemical Products (ISIC Division 20)
+G4 <- subset(RD.ps, NIC2 %in% c(20))
+
+#Group 5: Rubber, Plastic, and Non-Metallic Mineral Products (ISIC Division 21)
+G5 <- subset(RD.ps, NIC2 %in% c(21,22))
+
+#Group 6: Basic Metals and Fabricated Metal Products (ISIC Division 23)
+G6 <- subset(RD.ps, NIC2 %in% c(23,24))
+
+#Group 7: Computer, Electronic, and Optical Products (ISIC Division 25)
+G7 <- subset(RD.ps, NIC2 %in% c(25))
+
+#Group 8: Electrical Equipment (ISIC Division 26)
+G8 <- subset(RD.ps, NIC2 %in% c(26))
+
+#Group 9: Machinery and Equipment (ISIC Division 27)
+G9 <- subset(RD.ps, NIC2 %in% c(27))
+
+#Group 10: Motor Vehicles, Trailers, and Semi-Trailers (ISIC Division 28)
+G10 <- subset(RD.ps, NIC2 %in% c(28,29))
+
+#Group 11: Repair and Installation of Machinery and Equipment (ISIC Division 32)
+G11 <- subset(RD.ps, NIC2 %in% c(32))
+
+#Group 12: Other Manufacturing (ISIC Division 31)
+G12 <- subset(RD.ps, NIC2 %in% c(31))
+```
+
+
+```{r}
+#Running the RegresSion Models with the new data structure. 
+
+###FE MODEL
+
+grun.fe <- plm(Ri ~ Si + Pi  + Net.sales , data = RD.ps, model = "within")
+summary(grun.fe) 
+nobs(grun.fe)
+
+###RANDOM MODEL
+grun.re2 <- plm(Ri ~ Si + Pi +  Net.sales , data = RD.ps, model = "random")
+summary(grun.re2)
+nobs(grun.re2)
+
+stargazer::stargazer(grun.fe, grun.re2,  type = "text")
+
+###Hausman test
+## If p-value is < 0.05 then use fixed effects
+phtest(grun.fe, grun.re2)
+```
+
+```{r}
+###FE MODEL | Year factor
+##When a numeric variable is used as a factor, R treats it as a categorical variable with a distinct set of levels. In this case, the factor function is used to convert the numeric variable "Year" into a categorical variable with a unique level for each year in the dataset.
+
+I##ncluding a categorical variable as a predictor in a regression model allows for estimating the effect of different levels of the categorical variable on the outcome variable. In this case, including factor(Year) in the formula allows 
+
+grun.fe3 <- plm(Ri ~ Si + factor(Year), data = RD.ps, model = "within")
+summary(grun.fe3) 
+
+```
+
+
+```{r}
+#Running the Regression Models with the new data structure. 
+
+###FE MODEL
+
+grun.fe1 <- plm(Ri ~ Si + Pi  + Net.sales + Si*Pi, data = RD.ps, model = "within")
+summary(grun.fe1) 
+nobs(grun.fe1)
+
+###RANDOM MODEL
+grun.re21 <- plm(Ri ~ Si + Pi +  Net.sales  + Si*Pi , data = RD.ps, model = "random")
+summary(grun.re21)
+nobs(grun.re21)
+
+stargazer::stargazer(grun.fe1, grun.re21,  type = "text")
+
+###Hausman test
+## If p-value is < 0.05 then use fixed effects
+phtest(grun.fe1, grun.re21)
+```
+
+```{r}
+###Tobit Model
+panelResult <- censReg( Ri ~ Si + Pi + Net.sales, data = RD.ps)
+
+summary (panelResult)
+
+panelResult1 <- censReg( Ri ~ Si + Pi + Net.sales + Si*Pi, data = RD.ps)
+
+summary (panelResult1)
+
+stargazer::stargazer(panelResult, panelResult1,  type = "text")
+
+
+```
+
+
+```{r}
+###NIC Panel | Fixxed effect
+Reg_10a<- plm(Ri ~ Si + Pi + Net.sales, data = RD.ps_10, model = "within")
+summary(Reg_10a)
+
+Reg_11a<- plm(Ri ~ Si + Pi + Net.sales, data = RD.ps_11, model = "within")
+summary(Reg_11a)
+
+Reg_12a<- plm(Ri ~ Si + Pi + Net.sales, data = RD.ps_12, model = "within")
+summary(Reg_12a)
+
+Reg_13a<- plm(Ri ~ Si + Pi + Net.sales, data = RD.ps_13, model = "within")
+summary(Reg_13a)
+
+Reg_14a<- plm(Ri ~ Si + Pi + Net.sales, data = RD.ps_14, model = "within")
+summary(Reg_14a)
+
+#Reg_15a<- plm(Ri ~ Si + Pi + Net.sales, data = RD.ps_15, model = "within")
+#summary(Reg_15a)
+
+Reg_16a<- plm(Ri ~ Si + Pi + Net.sales, data = RD.ps_16, model = "within")
+summary(Reg_16a)
+
+Reg_17a<- plm(Ri ~ Si + Pi + Net.sales, data = RD.ps_17, model = "within")
+summary(Reg_17a)
+
+Reg_18a<- plm(Ri ~ Si + Pi + Net.sales, data = RD.ps_18, model = "within")
+summary(Reg_18a)
+
+Reg_19a<- plm(Ri ~ Si + Pi + Net.sales, data = RD.ps_19, model = "within")
+summary(Reg_19a)
+
+Reg_20a<- plm(Ri ~ Si + Pi + Net.sales, data = RD.ps_20, model = "within")
+summary(Reg_20a)
+
+Reg_21a<- plm(Ri ~ Si + Pi + Net.sales, data = RD.ps_21, model = "within")
+summary(Reg_21a)
+
+Reg_22a<- plm(Ri ~ Si + Pi + Net.sales, data = RD.ps_22, model = "within")
+summary(Reg_22a)
+
+Reg_23a<- plm(Ri ~ Si + Pi + Net.sales, data = RD.ps_23, model = "within")
+summary(Reg_23a)
+
+Reg_24a<- plm(Ri ~ Si + Pi + Net.sales, data = RD.ps_24, model = "within")
+summary(Reg_24a)
+
+Reg_25a<- plm(Ri ~ Si + Pi + Net.sales, data = RD.ps_25, model = "within")
+summary(Reg_25a)
+
+Reg_26a<- plm(Ri ~ Si + Pi + Net.sales, data = RD.ps_26, model = "within")
+summary(Reg_26a)
+
+Reg_27a<- plm(Ri ~ Si + Pi + Net.sales, data = RD.ps_27, model = "within")
+summary(Reg_27a)
+
+Reg_28a<- plm(Ri ~ Si + Pi + Net.sales, data = RD.ps_28, model = "within")
+summary(Reg_28a)
+
+Reg_29a<- plm(Ri ~ Si + Pi + Net.sales, data = RD.ps_29, model = "within")
+summary(Reg_29a)
+
+Reg_30a<- plm(Ri ~ Si + Pi + Net.sales, data = RD.ps_30, model = "within")
+summary(Reg_30a)
+
+#Reg_31a<- plm(Ri ~ Si + Pi + Net.sales, data = RD.ps_31, model = "within")
+#ummary(Reg_31a)
+
+Reg_32a<- plm(Ri ~ Si + Pi + Net.sales, data = RD.ps_32, model = "within")
+summary(Reg_32a)
+
+#Reg_33a<- plm(Ri ~ Si + Pi + Net.sales, data = RD.ps_33, model = "within")
+#summary(Reg_33a)
+```
+
+
+```{r}
+###Group 1
+stargazer::stargazer(Reg_10a, Reg_11a, Reg_12a, Reg_13a, Reg_14a, Reg_16a, Reg_17a, type = "text")
+
+###Group 2
+stargazer::stargazer(Reg_18a, Reg_20a, Reg_21a, Reg_22a, Reg_23a, Reg_24a, Reg_25a, type = "text")
+
+###Group 3
+stargazer::stargazer(Reg_26a, Reg_27a, Reg_28a, Reg_29a, Reg_30a, Reg_32a, type = "text")
+```
+
+
+```{r}
+###NIC Tobit 
+Reg_10b<- censReg(Ri ~ Si + Pi + Net.sales, data = RD.ps_10)
+summary(Reg_10b)
+
+Reg_11b<- censReg(Ri ~ Si + Pi + Net.sales, data = RD.ps_11)
+summary(Reg_11b)
+
+#Reg_12b<- censReg(Ri ~ Si + Pi + Net.sales, data = RD.ps_12) {NO Cens term}
+#summary(Reg_12b)
+
+Reg_13b<- censReg(Ri ~ Si + Pi + Net.sales, data = RD.ps_13)
+summary(Reg_13b)
+
+Reg_14b<- censReg(Ri ~ Si + Pi + Net.sales, data = RD.ps_14)
+summary(Reg_14b)
+
+#Reg_15b<- censReg(Ri ~ Si + Pi + Net.sales, data = RD.ps_15) {NO Cens term}
+#summary(Reg_15b)
+
+
+#Reg_16b<- censReg(Ri ~ Si + Pi + Net.sales, data = RD.ps_16) {NO Cens term}
+#summary(Reg_16b)
+
+#Reg_17b<- censReg(Ri ~ Si + Pi + Net.sales, data = RD.ps_17) {NO Cens term}
+#summary(Reg_17b)
+
+#Reg_18b<- censReg(Ri ~ Si + Pi + Net.sales, data = RD.ps_18) {NO Cens term}
+#summary(Reg_18b)
+
+Reg_19b<- censReg(Ri ~ Si + Pi + Net.sales, data = RD.ps_19)
+summary(Reg_19b)
+
+Reg_20b<- censReg(Ri ~ Si + Pi + Net.sales, data = RD.ps_20)
+summary(Reg_20b)
+
+Reg_21b<- censReg(Ri ~ Si + Pi + Net.sales, data = RD.ps_21)
+summary(Reg_21b)
+
+Reg_22b<- censReg(Ri ~ Si + Pi + Net.sales, data = RD.ps_22)
+summary(Reg_22b)
+
+Reg_23b<- censReg(Ri ~ Si + Pi + Net.sales, data = RD.ps_23)
+summary(Reg_23b)
+
+Reg_24b<- censReg(Ri ~ Si + Pi + Net.sales, data = RD.ps_24)
+summary(Reg_24b)
+
+Reg_25b<- censReg(Ri ~ Si + Pi + Net.sales, data = RD.ps_25)
+summary(Reg_25b)
+
+Reg_26b<- censReg(Ri ~ Si + Pi + Net.sales, data = RD.ps_26)
+summary(Reg_26b)
+
+Reg_27b<- censReg(Ri ~ Si + Pi + Net.sales, data = RD.ps_27)
+summary(Reg_27b)
+
+Reg_28b<- censReg(Ri ~ Si + Pi + Net.sales, data = RD.ps_27)
+summary(Reg_28b)
+
+Reg_29b<- censReg(Ri ~ Si + Pi + Net.sales, data = RD.ps_27)
+summary(Reg_29b)
+
+Reg_30b<- censReg(Ri ~ Si + Pi + Net.sales, data = RD.ps_27)
+summary(Reg_30b)
+
+Reg_31b<- censReg(Ri ~ Si + Pi + Net.sales, data = RD.ps_27)
+summary(Reg_31b)
+
+Reg_32b<- censReg(Ri ~ Si + Pi + Net.sales, data = RD.ps_27)
+summary(Reg_32b)
+
+Reg_33b<- censReg(Ri ~ Si + Pi + Net.sales, data = RD.ps_27)
+summary(Reg_33b)
+```
+
+
+```{r}
+###Group 1
+stargazer::stargazer(Reg_10b, Reg_11b, Reg_13b, Reg_14b, Reg_19b, type = "text")
+
+###Group 2
+stargazer::stargazer(Reg_20b, Reg_21b, Reg_22b, Reg_23b, Reg_24b, Reg_25b, type = "text")
+
+###Group 3
+stargazer::stargazer(Reg_26b, Reg_27b, Reg_28b, Reg_29b, Reg_30b, Reg_32b, type = "text")
+```
+
+```{r}
+#NIC Gorups || Fixed effect model
+G1<- plm(Ri ~ Si + Pi + Net.sales, data = G1, model = "within")
+summary(G1)
+
+G2<- plm(Ri ~ Si + Pi + Net.sales, data = G2, model = "within")
+summary(G2)
+
+G3<- plm(Ri ~ Si + Pi + Net.sales, data = G3, model = "within")
+summary(G3)
+
+G4<- plm(Ri ~ Si + Pi + Net.sales, data = G4, model = "within")
+summary(G4)
+
+G5<- plm(Ri ~ Si + Pi + Net.sales, data = G5, model = "within")
+summary(G5)
+
+G6<- plm(Ri ~ Si + Pi + Net.sales, data = G6, model = "within")
+summary(G6)
+
+G7<- plm(Ri ~ Si + Pi + Net.sales, data = G7, model = "within")
+summary(G7)
+
+G8<- plm(Ri ~ Si + Pi + Net.sales, data = G8, model = "within")
+summary(G8)
+
+G9<- plm(Ri ~ Si + Pi + Net.sales, data = G9, model = "within")
+summary(G9)
+
+G10<- plm(Ri ~ Si + Pi + Net.sales, data = G10, model = "within")
+summary(G10)
+
+G11<- plm(Ri ~ Si + Pi + Net.sales, data = G11, model = "within")
+summary(G11)
+
+G12<- plm(Ri ~ Si + Pi + Net.sales, data = G12, model = "within")
+summary(G12)
+```
+
+```{r}
+# Create a data frame with the residuals
+residuals <- as.data.frame(resid(grun.fe))
+
+# Plot the residuals
+ggplot(residuals, aes(x = 1:length(residuals))) + 
+  geom_point(aes(y = resid(grun.fe))) + 
+  geom_hline(yintercept = 0) +
+  xlab("Observation Number") + 
+  ylab("Residuals") + 
+  ggtitle("Residual Plot for the Fixed-Effect Model")
+```
+
+
+```{r}
+# Extract residuals from fixed effect model
+residuals_fe <- residuals(grun.fe3)
+
+# Create a data frame with the Time and Residuals vectors
+df_fe <- data.frame(Time = rep(1:9), Residuals = residuals_fe[1:9])
+
+# Plot the Residuals against Time
+ggplot(df_fe, aes(x = Time, y = Residuals)) +
+  geom_line() +
+  labs(x = "Time", y = "Residuals") +
+  ggtitle("Fixed Effect Model Residuals vs Time")
+```
+
+
+
