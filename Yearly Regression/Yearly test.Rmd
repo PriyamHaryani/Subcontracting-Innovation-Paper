@@ -29,7 +29,7 @@ library(pastecs)
 
 ```{r}
 ###Data read
-y2011 <- read_excel("C:/Users/91910/Desktop/Me Mario/Papers/Subcontracting & Innovation/Data 2/Main Yearly Data.xlsx", 
+y2011 <- read_excel("Yearly Regression/Main Yearly Data.xlsx", 
     sheet = "2011")
 
 ###Dummy setup
@@ -81,7 +81,7 @@ stargazer::stargazer(Result_y2011NS, r1_y2011, type = "text")
 
 ```{r}
 ###Data read
-y2012 <- read_excel("C:/Users/91910/Desktop/Me Mario/Papers/Subcontracting & Innovation/Data 2/Main Yearly Data.xlsx", 
+y2012 <- read_excel("Yearly Regression/Main Yearly Data.xlsx", 
     sheet = "2012")
 
 ###Dummy setup
@@ -128,7 +128,7 @@ stargazer::stargazer(Result_y2012NS, r1_y2012, type = "text")
 
 ```{r}
 ###Data read
-y2013 <- read_excel("C:/Users/91910/Desktop/Me Mario/Papers/Subcontracting & Innovation/Data 2/Main Yearly Data.xlsx", 
+y2013 <- read_excel("Yearly Regression/Main Yearly Data.xlsx", 
     sheet = "2013")
 
 ###Dummy setup
@@ -172,7 +172,7 @@ stargazer::stargazer(Result_y2013NS, r1_y2013, type = "text")
 
 ```{r}
 ###Data read
-y2014 <- read_excel("C:/Users/91910/Desktop/Me Mario/Papers/Subcontracting & Innovation/Data 2/Main Yearly Data.xlsx", 
+y2014 <- read_excel("Yearly Regression/Main Yearly Data.xlsx", 
     sheet = "2014")
 
 ###Dummy setup
@@ -218,7 +218,7 @@ stargazer::stargazer(Result_y2014NS, r1_y2014, type = "text")
 
 ```{r}
 ###Data read
-y2015 <- read_excel("C:/Users/91910/Desktop/Me Mario/Papers/Subcontracting & Innovation/Data 2/Main Yearly Data.xlsx", 
+y2015 <- read_excel("Yearly Regression/Main Yearly Data.xlsx", 
     sheet = "2015")
 
 ###Dummy setup
@@ -264,7 +264,7 @@ stargazer::stargazer(Result_y2015NS, r1_y2015, type = "text")
 
 ```{r}
 ###Data read
-y2016 <- read_excel("C:/Users/91910/Desktop/Me Mario/Papers/Subcontracting & Innovation/Data 2/Main Yearly Data.xlsx", 
+y2016 <- read_excel("Yearly Regression/Main Yearly Data.xlsx", 
     sheet = "2016")
 
 ###Dummy setup
@@ -310,7 +310,7 @@ stargazer::stargazer(Result_y2016NS, r1_y2016, type = "text")
 
 ```{r}
 ###Data read
-y2017 <- read_excel("C:/Users/91910/Desktop/Me Mario/Papers/Subcontracting & Innovation/Data 2/Main Yearly Data.xlsx", 
+y2017 <- read_excel("Yearly Regression/Main Yearly Data.xlsx", 
     sheet = "2017")
 
 ###Dummy setup
@@ -357,7 +357,7 @@ stargazer::stargazer(Result_y2017NS, r1_y2017, type = "text")
 
 ```{r}
 ###Data read
-y2018 <- read_excel("C:/Users/91910/Desktop/Me Mario/Papers/Subcontracting & Innovation/Data 2/Main Yearly Data.xlsx", 
+y2018 <- read_excel("Yearly Regression/Main Yearly Data.xlsx", 
     sheet = "2018")
 
 ###Dummy setup
@@ -403,7 +403,7 @@ stargazer::stargazer(Result_y2018NS, r1_y2018, type = "text")
 
 ```{r}
 ###Data read
-y2019 <- read_excel("C:/Users/91910/Desktop/Me Mario/Papers/Subcontracting & Innovation/Data 2/Main Yearly Data.xlsx", 
+y2019 <- read_excel("Yearly Regression/Main Yearly Data.xlsx", 
     sheet = "2019")
 
 ###Dummy setup
@@ -449,7 +449,7 @@ write_xlsx(y2019, "C:\\Users\\91910\\Desktop\\dissertaion\\Data 3 for graphs\\y2
 
 ```{r}
 ###Data read
-y2020 <- read_excel("C:/Users/91910/Desktop/Me Mario/Papers/Subcontracting & Innovation/Data 2/Main Yearly Data.xlsx", 
+y2020 <- read_excel("Yearly Regression/Main Yearly Data.xlsx", 
     sheet = "2020")
 
 ###Dummy setup
@@ -496,7 +496,7 @@ write_xlsx(y2020, "C:\\Users\\91910\\Desktop\\dissertaion\\Data 3 for graphs\\y2
 
 ```{r}
 ###Data read
-y2021 <- read_excel("C:/Users/91910/Desktop/Me Mario/Papers/Subcontracting & Innovation/Data 2/Main Yearly Data.xlsx", 
+y2021 <- read_excel("Yearly Regression/Main Yearly Data.xlsx", 
     sheet = "2021")
 
 ###Dummy setup
